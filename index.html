@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock ➖1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 { color:#333; }
+        .choices, .pickOne { margin: 20px 0; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 30px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover { background-color: #45a049; }
+        #result { margin-top: 20px; font-size:18px; font-weight:bold; }
+    </style>
+</head>
+<body>
+    <h1>Rock Paper Scissors ➖1</h1>
+    <p>Pick <strong>two</strong>:</p>
+    <div class="choices">
+        <button onclick="pickTwo('rock')">🪨</button>
+        <button onclick="pickTwo('paper')">📄</button>
+        <button onclick="pickTwo('scissors')">✂️</button>
+    </div>
+    <div id="chosen"></div>
+    <div id="next" class="pickOne" style="display:none;"></div>
+    <div id="result"></div>
+    <button id="resetBtn" onclick="resetGame()">Reset</button>
+
+<script>
+let picked = [];
+let compPicked = [];
+const map = { rock:'🪨', paper:'📄', scissors:'✂️' };
+
+function pickTwo(choice){
+  if(picked.includes(choice)) return;
+  picked.push(choice);
+  document.getElementById('chosen').innerText = 'You picked: ' + picked.map(c=>map[c]).join(' ');
+  if(picked.length === 2){
+    // computer picks two random
+    const opts = ['rock','paper','scissors'];
+    while(compPicked.length < 2){
+      let r = opts[Math.floor(Math.random()*3)];
+      if(!compPicked.includes(r)) compPicked.push(r);
+    }
+    const compDiv = document.createElement('div');
+    compDiv.innerText = 'Computer picked: ' + compPicked.map(c=>map[c]).join(' ');
+    document.getElementById('chosen').appendChild(compDiv);
+    showNext();
+  }
+}
+
+function showNext(){
+  const div = document.getElementById('next');
+  div.innerHTML = '<p>Pick <b>one</b>:</p>';
+  picked.forEach(c => {
+    const btn = document.createElement('button');
+    btn.textContent = map[c];
+    btn.onclick = () => finish(c);
+    div.appendChild(btn);
+  });
+  div.style.display = 'block';
+}
+
+function finish(finalChoice){
+  const ai = compPicked[Math.floor(Math.random()*2)];
+  let text = `You chose ${map[finalChoice]}  Computer chose ${map[ai]}\n`;
+  if(finalChoice === ai){ 
+    text += "Tie!" 
+  }
+  else if(
+    (finalChoice==='rock' && ai==='scissors') ||
+    (finalChoice==='paper' && ai==='rock') ||
+    (finalChoice==='scissors' && ai==='paper')
+  ){
+    text += "You win!"
+  } else {
+    text += "Computer wins!"
+  }
+  document.getElementById('result').innerText = text;
+  document.getElementById('next').style.display='none';
+}
+
+function resetGame(){
+  picked = [];
+  compPicked = [];
+  document.getElementById('chosen').innerHTML = '';
+  const nextDiv = document.getElementById('next');
+  nextDiv.style.display = 'none';
+  nextDiv.innerHTML = '';
+  document.getElementById('result').innerText = '';
+}
+</script>
+</body>
+</html>
